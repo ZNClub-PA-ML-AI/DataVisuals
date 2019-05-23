@@ -29,7 +29,17 @@ nifty50
 ## Initialize plot
 ```{r}
 library(ggplot2)
-ggplot(data = nifty50,
-       mapping = aes(x = date, y = close))
+
+plot1 <- ggplot(data = nifty50,
+          mapping = aes(x = date, y = close))
+plot1
 ```
 
+## Plot points
+
+        
+```{r}
+plot2 <- plot1 +
+          geom_point()
+plot2  
+```
