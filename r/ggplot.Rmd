@@ -1,6 +1,7 @@
 ---
 title: "R Notebook"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -50,42 +51,59 @@ library(datasets)
 library(readr)
 nifty50 <- read_csv("~/Desktop/Projects/ZNevzz/DataVisuals/data/nifty50.csv")
 nifty50
+
+# data <- nifty50[sample(nrow(nifty50), 3000),]
+data <- nifty50[1:1000,]
 ```
 
 #### Initialize plot
 
 ```{r}
-data <- nifty50[sample(nrow(nifty50), 3000),]
 
 plot1 <- ggplot(data = data,
           mapping = aes(x = date, y = close))
 plot1
 ```
 
-## Plot points
+#### Plot points
 
         
 ```{r}
-plot2 <- plot1 +
+plot11 <- plot1 +
           geom_point()
-plot2  
+plot11  
 ```
 
 
 ---
 
 
+### AIR QUALITY
+
+```{r}
+data <- airquality
+```
+
+```{r}
+ggplot(data = data, mapping = aes(x=Month, y=Ozone)) + geom_count()
+```
+```{r}
+ggplot(data = data, mapping = aes(x=Month, y=Wind)) + geom_col()
+```
+
+
 ### datasets
 ```{r}
 help(datasets)
-# frame <- cars
-# frame <- ability.cov
-# frame <- AirPassengers
-frame <- attenu
+display <- function(frame) {
+  str(frame)
+  plot(frame)
+}
 ```
 
 
 ```{r}
-plot(frame)
-head(frame)
+
+applied <- lapply(list(cars, airmiles, AirPassengers, airquality), display)
+
 ```
