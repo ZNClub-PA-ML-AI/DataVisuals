@@ -67,7 +67,7 @@ y_axis = Select(title="Y Axis", options=sorted(axis_map.keys()), value="Fare")
 source = ColumnDataSource(data=dict(x=[], y=[], color=[], title=[], year=[], revenue=[], alpha=[]))
 
 TOOLTIPS=[
-    ("Title", "@title"),
+    ("Age", "@age"),
     ("Year", "@year"),
     ("$", "@revenue")
 ]
