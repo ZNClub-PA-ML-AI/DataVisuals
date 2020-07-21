@@ -7,7 +7,8 @@ from bokeh.embed import server_document
 from bokeh.layouts import column
 from bokeh.models import ColumnDataSource, Slider
 from bokeh.plotting import figure
-from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
+#from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
+import pandas as pd
 from bokeh.server.server import Server
 from bokeh.themes import Theme
 
@@ -15,7 +16,9 @@ app = Flask(__name__)
 
 
 def bkapp(doc):
-    df = sea_surface_temperature.copy()
+    df = pd.read_csv(r"../data/nifty50.csv").groupby(['date']).max().reset_index()
+    df['time'] = pd.to_datetime(df['date'], infer_datetime_format=True)
+    df['temperature'] = df['close']
     source = ColumnDataSource(data=df)
 
     plot = figure(x_axis_type='datetime', y_range=(0, 25), y_axis_label='Temperature (Celsius)',
