@@ -61,11 +61,19 @@ usp.extract <- function(plan_usp_details) {
   return(unlist(usp))
 }
 
-usp.frequency <- function(quote_master) {
+usp.frequency <- function(quote_master, percentage=F, decimal=5, ascending=T) {
   plan_usp_details <- quote.extract(quote_master, "PlanUSPDetails")
   usp <- usp.extract(plan_usp_details)
   distribution <- table(usp)
-  return(cbind(distribution))
+  result <- NULL
+  if(percentage){
+    options(digits = decimal)
+    result <- (percentage <- distribution/nrow(distribution) *100)
+  
+  } else {
+    result <- distribution
+  }
+  return(cbind(sort(result, decreasing=ascending)))
 }
 
 usp.unique <- function(quote_master, limit = -1) {
@@ -85,7 +93,8 @@ supplier.frequency <- function(quote_master) {
 
 d1 <- quote.merge_all(raw_data[["StakedQuote"]])
 d2 <- usp.unique(d1)
-d3 <- usp.frequency(d1)
+d31 <- usp.frequency(d1)
+d32 <- usp.frequency(d1, percentage = T, decimal = 2, ascending = F)
 d4 <- supplier.frequency(d1)
 ```
 
