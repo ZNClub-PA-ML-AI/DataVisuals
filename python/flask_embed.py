@@ -50,9 +50,9 @@ class BokehApp(object):
         def slider_callback(attribute, old_value, new_value):
             print('Callback', attribute, old_value, new_value)
             df = pd.DataFrame(self.data_sets[data_name].data)
-            print('DataFrame', df)
+            print('DataFrame', df.head(2))
             df = df[df[y_name] < new_value]
-#            self.data_sets[data_name] = ColumnDataSource(df)
+            self.data_sets[data_name].data = ColumnDataSource.from_df(df)
             
         
         df = self.data_sets[data_name].data

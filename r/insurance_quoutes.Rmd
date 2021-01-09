@@ -1,0 +1,93 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+.libPaths()
+library(jsonlite)
+```
+
+```{r}
+file_name = 'InsuranceQuotes.json'
+file_path = '../data/'
+
+.file_location = function(file_name='', file_path=''){
+  paste0(file_path, file_name);
+}
+
+```
+```{r}
+file_resource = .Filelocation(file_name = file_name, file_path = file_path)
+raw_data = read_json(file_resource)
+#raw_data
+```
+
+## Sample Json Paths
+
+```
+$StakedQuote
+$StakedQuote[[1]]
+$StakedQuote[[1]]$quotes
+$StakedQuote[[1]]$quotes[[1]]
+$StakedQuote[[1]]$quotes[[1]]$SupplierId
+```
+```{r}
+# flatmap all quotes: unlist
+
+raw_data$StakedQuote[[1]]$quotes[[19]]$PlanUSPDetails[[1]]$USPText
+total_quotes = length(raw_data$StakedQuote[[1]]$quotes)
+total_quotes
+length(raw_data$StakedQuote)
+```
+
+```{r}
+# http://zevross.com/blog/2019/06/11/the-power-of-three-purrr-poseful-iteration-in-r-with-map-pmap-and-imap/
+# http://web.mit.edu/6.005/www/fa16/classes/24-map-filter-reduce/
+
+quote.merge_all <- function(quotes_wrapper){
+  y = lapply(quotes_wrapper, function(x) x[["quotes"]])
+  unlist(y, recursive = F)
+}
+
+quote.extract <- function(quote_master, quote_attribute) {
+  return(lapply(quote_master, function(x) x[[quote_attribute]]))
+}
+
+
+usp.extract <- function(plan_usp_details) {
+  flattened <- unlist(plan_usp_details, recursive = F)
+  usp <- lapply(flattened, function(x) x[["USPText"]])
+  return(unlist(usp))
+}
+
+usp.frequency <- function(quote_master) {
+  plan_usp_details <- quote.extract(quote_master, "PlanUSPDetails")
+  usp <- usp.extract(plan_usp_details)
+  distribution <- table(usp)
+  return(cbind(distribution))
+}
+
+usp.unique <- function(quote_master, limit = -1) {
+  # usp <- lapply(raw_data[["StakedQuote"]][[1]][["quotes"]][[1]][["PlanUSPDetails"]], function(x) x$USPText)
+  
+  plan_usp_details <- quote.extract(quote_master, "PlanUSPDetails")
+  usp <- usp.extract(plan_usp_details)
+  result <- unique(usp)
+  return(result)
+}
+
+supplier.frequency <- function(quote_master) {
+  supplier_names <- lapply(quote_master, function(x) x[["SupplierName"]])
+  distribution <- table(unlist(supplier_names))
+  return(cbind(distribution))
+}
+
+d1 <- quote.merge_all(raw_data[["StakedQuote"]])
+d2 <- usp.unique(d1)
+d3 <- usp.frequency(d1)
+d4 <- supplier.frequency(d1)
+```
+
+
+
